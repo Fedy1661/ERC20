@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import chai, { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Token } from "../typechain";
+import { Token } from "../../typechain";
 import { BigNumber } from "ethers";
 
 chai.use(require('chai-bignumber')());
