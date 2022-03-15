@@ -7,7 +7,7 @@ contract Token {
     string private _symbol = 'ATH';
     uint8 private _decimals = 18;
     uint256 private _totalSupply = 1_000_000_000;
-    address private owner;
+    address private _minter;
 
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -16,7 +16,7 @@ contract Token {
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
     constructor() {
-        owner = msg.sender;
+        _minter = msg.sender;
         _balances[msg.sender] = _totalSupply;
     }
 
@@ -77,14 +77,14 @@ contract Token {
 
     function burn(address _account, uint256 _amount) public {
         require(_amount > 0, 'Amount should be positive');
-        require(msg.sender == owner, 'You should be an owner');
+        require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] -= _amount;
         _totalSupply -= _amount;
     }
 
     function mint(address _account, uint256 _amount) public {
         require(_amount > 0, 'Amount should be positive');
-        require(msg.sender == owner, 'You should be an owner');
+        require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] += _amount;
         _totalSupply += _amount;
     }
