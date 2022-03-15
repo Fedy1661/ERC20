@@ -80,6 +80,7 @@ contract Token {
         require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] -= _amount;
         _totalSupply -= _amount;
+        emit Transfer(msg.sender, _account, _amount);
     }
 
     function mint(address _account, uint256 _amount) public {
@@ -87,6 +88,7 @@ contract Token {
         require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] += _amount;
         _totalSupply += _amount;
+        emit Transfer(msg.sender, _account, _amount);
     }
 
 }

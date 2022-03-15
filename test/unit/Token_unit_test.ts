@@ -225,6 +225,10 @@ describe("Token", function() {
 
       expect(before).to.be.equal(after.add(100))
     });
+    it("should emit event", async () => {
+      const tx = contract.connect(owner).burn(owner.address, 1);
+      await expect(tx).to.be.emit(contract, "Transfer");
+    });
     it("should spend gas", async () => {
       const tx = await contract.burn(owner.address, 100)
       expect(tx).have.a.property('gasPrice')
@@ -258,11 +262,14 @@ describe("Token", function() {
 
       expect(before < after).to.be.true
     });
+    it("should emit event", async () => {
+      const tx = contract.connect(owner).mint(addr1.address, 1);
+      await expect(tx).to.be.emit(contract, "Transfer");
+    });
     it("should spend gas", async () => {
       const tx = await contract.mint(owner.address, 100)
       expect(tx).have.a.property('gasPrice')
         .be.gt(0)
     });
-
   });
 });
