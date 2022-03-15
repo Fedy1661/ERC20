@@ -74,17 +74,6 @@ describe("Token", function() {
       const totalSupply = await contract.totalSupply();
       expect(call).to.be.equal(totalSupply);
     });
-    it("should increase balance after transfer", async () => {
-      await contract.connect(owner).transfer(addr1.address, 1);
-      const call = await contract.balanceOf(addr1.address);
-      expect(call).to.be.equal(1);
-    });
-    it("should decrease balance after transfer", async () => {
-      await contract.connect(owner).transfer(addr1.address, 1);
-      await contract.connect(addr1).transfer(owner.address, 1);
-      const call = await contract.balanceOf(addr1.address);
-      expect(call).to.be.equal(0);
-    });
     it("should not spend gas", async () => {
       const previousBalance = await addr1.getBalance();
       await contract.connect(addr1).balanceOf(owner.address);
@@ -97,18 +86,24 @@ describe("Token", function() {
       const tx = contract.transfer(addr1.address, 0);
       await expect(tx).to.be.revertedWith("Value should be positive");
     });
-    it("should be an error when not enough tokens", async () => {
-      const tx = contract.connect(addr1).transfer(owner.address, 1);
-      await expect(tx).to.be.revertedWith("You do not have enough tokens");
-    });
     it("should be an error when sending to yourself", async () => {
       const tx = contract.connect(owner).transfer(addr1.address, 1);
       await expect(tx).to.be.emit(contract, "Transfer");
     });
-    it("should increase and decrease balance", async () => {
-      await contract.connect(owner).transfer(addr1.address, 1);
+    it("should be an error when not enough tokens", async () => {
       const tx = contract.connect(addr1).transfer(owner.address, 1);
-      await expect(tx).not.to.be.reverted;
+      await expect(tx).to.be.revertedWith("You do not have enough tokens");
+    });
+    it("should increase balance", async () => {
+      await contract.connect(owner).transfer(addr1.address, 1);
+      const call = await contract.balanceOf(addr1.address);
+      expect(call).to.be.equal(1);
+    });
+    it("should decrease balance", async () => {
+      const before = await contract.balanceOf(owner.address)
+      await contract.connect(owner).transfer(addr1.address, 1);
+      const after = await contract.balanceOf(addr1.address);
+      expect(after).to.be.lt(before);
     });
     it("should emit event", async () => {
       const tx = contract.connect(owner).transfer(addr1.address, 1);
@@ -119,7 +114,6 @@ describe("Token", function() {
       expect(tx).have.a.property('gasPrice')
         .be.gt(0)
     });
-
   });
   describe("transferFrom", () => {
     it("should throw error if the owner balance doesn't have enough tokens",
