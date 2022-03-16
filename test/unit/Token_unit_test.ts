@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import chai, { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Token } from "../../typechain";
@@ -10,13 +10,30 @@ describe("Token", function() {
   let contract: Token;
   let owner: SignerWithAddress;
   let addr1: SignerWithAddress;
+  let clean: any;
 
-  beforeEach(async () => {
+  before(async () => {
     const Contract = await ethers.getContractFactory("Token");
     contract = await Contract.deploy();
     [owner, addr1] = await ethers.getSigners();
     await contract.deployed();
+
+    clean = await network.provider.request({
+      method: 'evm_snapshot',
+      params: []
+    })
   });
+
+  afterEach(async () => {
+    await network.provider.request({
+      method: 'evm_revert',
+      params: [clean]
+    })
+    clean = await network.provider.request({
+      method: 'evm_snapshot',
+      params: []
+    })
+  })
 
   describe("name", () => {
     it("should return name", async () => {
