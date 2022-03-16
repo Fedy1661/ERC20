@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 contract Token {
-    string private _name = 'Atlantic';
-    string private _symbol = 'ATH';
-    uint8 private _decimals = 18;
-    uint256 private _totalSupply = 1_000_000_000;
+    string public name = 'Atlantic';
+    string public symbol = 'ATH';
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1_000_000_000;
     address private _minter;
 
     mapping(address => uint256) private _balances;
@@ -17,23 +17,7 @@ contract Token {
 
     constructor() {
         _minter = msg.sender;
-        _balances[msg.sender] = _totalSupply;
-    }
-
-    function name() public view returns (string memory) {
-        return _name;
-    }
-
-    function symbol() public view returns (string memory) {
-        return _symbol;
-    }
-
-    function decimals() public view returns (uint8) {
-        return _decimals;
-    }
-
-    function totalSupply() public view returns (uint256) {
-        return _totalSupply;
+        _balances[msg.sender] = totalSupply;
     }
 
     function balanceOf(address _owner) public view returns (uint256) {
@@ -79,7 +63,7 @@ contract Token {
         require(_amount > 0, 'Amount should be positive');
         require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] -= _amount;
-        _totalSupply -= _amount;
+        totalSupply -= _amount;
         emit Transfer(msg.sender, _account, _amount);
     }
 
@@ -87,7 +71,7 @@ contract Token {
         require(_amount > 0, 'Amount should be positive');
         require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] += _amount;
-        _totalSupply += _amount;
+        totalSupply += _amount;
         emit Transfer(msg.sender, _account, _amount);
     }
 
