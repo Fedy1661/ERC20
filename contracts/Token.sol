@@ -65,8 +65,10 @@ contract Token {
     function burn(address _account, uint256 _amount) public {
         require(_amount > 0, 'Amount should be positive');
         require(msg.sender == _minter, 'You should be an owner');
-        _balances[_account] -= _amount;
-        totalSupply -= _amount;
+        unchecked {
+            _balances[_account] -= _amount;
+            totalSupply -= _amount;
+        }
         emit Transfer(msg.sender, _account, _amount);
     }
 
