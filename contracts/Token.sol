@@ -31,7 +31,7 @@ contract Token {
         require(balanceSender >= _value, 'You do not have enough tokens');
 
         _balances[_to] += _value;
-        _balances[msg.sender] = _balances[msg.sender] - _value;
+        _balances[msg.sender] = balanceSender - _value;
 
         emit Transfer(msg.sender, _to, _value);
         return true;
