@@ -27,10 +27,11 @@ contract Token {
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_value > 0, 'Value should be positive');
         require(msg.sender != _to, 'You cannot transfer to yourself');
-        require(_balances[msg.sender] >= _value, 'You do not have enough tokens');
+        uint256 balanceSender = _balances[msg.sender];
+        require(balanceSender >= _value, 'You do not have enough tokens');
 
         _balances[_to] += _value;
-        _balances[msg.sender] -= _value;
+        _balances[msg.sender] = _balances[msg.sender] - _value;
 
         emit Transfer(msg.sender, _to, _value);
         return true;
