@@ -10,7 +10,7 @@ describe("Token", function() {
   let contract: Token;
   let owner: SignerWithAddress;
   let addr1: SignerWithAddress;
-  let clean: any;
+  let clean: string;
 
   before(async () => {
     const Contract = await ethers.getContractFactory("Token");
@@ -18,21 +18,12 @@ describe("Token", function() {
     [owner, addr1] = await ethers.getSigners();
     await contract.deployed();
 
-    clean = await network.provider.request({
-      method: 'evm_snapshot',
-      params: []
-    })
+    clean = await network.provider.send('evm_snapshot')
   });
 
   afterEach(async () => {
-    await network.provider.request({
-      method: 'evm_revert',
-      params: [clean]
-    })
-    clean = await network.provider.request({
-      method: 'evm_snapshot',
-      params: []
-    })
+    await network.provider.send('evm_revert',[clean])
+    clean = await network.provider.send('evm_snapshot')
   })
 
   describe("name", () => {
