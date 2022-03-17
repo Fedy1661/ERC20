@@ -38,11 +38,13 @@ contract Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_balances[_from] >= _value, 'Owner has not enough tokens');
-        require(_allowances[_from][msg.sender] >= _value, 'You can\'t transfer so tokens from this user');
+        uint256 fromValue = _balances[_from];
+        require(fromValue >= _value, 'Owner has not enough tokens');
+        uint256 availableValue = _allowances[_from][msg.sender];
+        require(availableValue >= _value, 'You can\'t transfer so tokens from this user');
 
-        _balances[_from] -= _value;
-        _allowances[_from][msg.sender] -= _value;
+        _balances[_from] = fromValue - _value;
+        _allowances[_from][msg.sender] = availableValue - _value;
         _balances[_to] += _value;
 
         emit Transfer(_from, _to, _value);
