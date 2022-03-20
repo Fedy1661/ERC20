@@ -6,7 +6,7 @@ contract Token {
     string public name = 'Atlantic';
     string public symbol = 'ATH';
     uint8 public decimals = 18;
-    uint256 public totalSupply = 1_000_000_000;
+    uint256 public totalSupply = 100_000_000_000_000_000_000;
     address private _minter;
 
     mapping(address => uint256) private _balances;
