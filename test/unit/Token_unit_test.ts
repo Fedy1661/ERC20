@@ -33,10 +33,8 @@ describe("Token", function() {
       expect(await contract.name()).to.be.a("string");
     });
     it("should not spend gas", async () => {
-      const previousBalance = await addr1.getBalance();
-      await contract.connect(addr1).name();
-
-      expect(await addr1.getBalance()).to.be.equal(previousBalance);
+      const tx = await contract.connect(addr1).name();
+      expect(tx).does.not.have.a.property('gasPrice')
     });
   });
   describe("symbol", () => {
@@ -44,10 +42,8 @@ describe("Token", function() {
       expect(await contract.symbol()).to.be.a("string");
     });
     it("should not spend gas", async () => {
-      const previousBalance = await addr1.getBalance();
-      await contract.connect(addr1).symbol();
-
-      expect(await addr1.getBalance()).to.be.equal(previousBalance);
+      const tx = await contract.connect(addr1).symbol();
+      expect(tx).does.not.have.a.property('gasPrice')
     });
   });
   describe("decimals", () => {
@@ -56,10 +52,8 @@ describe("Token", function() {
       expect(call).to.be.a("number");
     });
     it("should not spend gas", async () => {
-      const previousBalance = await addr1.getBalance();
-      await contract.connect(addr1).decimals();
-
-      expect(await addr1.getBalance()).to.be.equal(previousBalance);
+      const tx = await contract.connect(addr1).decimals();
+      expect(tx).does.not.have.a.property('gasPrice')
     });
   });
   describe("totalSupply", () => {
@@ -68,10 +62,8 @@ describe("Token", function() {
       expect(call).to.be.instanceof(BigNumber);
     });
     it("should not spend gas", async () => {
-      const previousBalance = await addr1.getBalance();
-      await contract.connect(addr1).totalSupply();
-
-      expect(await addr1.getBalance()).to.be.equal(previousBalance);
+      const tx = await contract.connect(addr1).totalSupply();
+      expect(tx).does.not.have.a.property('gasPrice')
     });
   });
   describe("balanceOf", () => {
@@ -85,10 +77,8 @@ describe("Token", function() {
       expect(call).to.be.equal(totalSupply);
     });
     it("should not spend gas", async () => {
-      const previousBalance = await addr1.getBalance();
-      await contract.connect(addr1).balanceOf(owner.address);
-
-      expect(await addr1.getBalance()).to.be.equal(previousBalance);
+      const tx = await contract.connect(addr1).balanceOf(owner.address);
+      expect(tx).does.not.have.a.property('gasPrice')
     });
   });
   describe("transfer", () => {
@@ -124,7 +114,6 @@ describe("Token", function() {
         addr1.address, initValue
       );
       expect(tx).have.a.property('gasPrice')
-        .be.gt(0)
     });
   });
   describe("transferFrom", () => {
@@ -187,7 +176,6 @@ describe("Token", function() {
         owner.address, addr1.address, initValue
       )
       expect(tx).have.a.property('gasPrice')
-        .be.gt(0)
     });
   });
   describe("approve", () => {
@@ -206,7 +194,7 @@ describe("Token", function() {
     });
     it("should spend gas", async () => {
       const tx = await contract.connect(owner).approve(addr1.address, initValue)
-      expect(tx).have.a.property('gasPrice').to.be.not.eq(0)
+      expect(tx).have.a.property('gasPrice')
     });
   });
   describe("burn", () => {
@@ -242,7 +230,7 @@ describe("Token", function() {
     });
     it("should spend gas", async () => {
       const tx = await contract.burn(owner.address, initValue)
-      expect(tx).have.a.property('gasPrice').not.to.be.eq(0)
+      expect(tx).have.a.property('gasPrice')
     });
   });
   describe("mint", () => {
@@ -278,7 +266,7 @@ describe("Token", function() {
     });
     it("should spend gas", async () => {
       const tx = await contract.mint(owner.address, initValue)
-      expect(tx).have.a.property('gasPrice').not.to.be.eq(0)
+      expect(tx).have.a.property('gasPrice')
     });
   });
 });
