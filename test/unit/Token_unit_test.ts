@@ -95,8 +95,8 @@ describe("Token", function() {
       await expect(tx).to.be.revertedWith("Value should be positive");
     });
     it("should be an error when sending to yourself", async () => {
-      const tx = contract.connect(owner).transfer(addr1.address, 1);
-      await expect(tx).to.be.emit(contract, "Transfer");
+      const tx = contract.connect(owner).transfer(owner.address, 1);
+      await expect(tx).to.be.revertedWith('You cannot transfer to yourself')
     });
     it("should be an error when not enough tokens", async () => {
       const tx = contract.connect(addr1).transfer(owner.address, 1);
