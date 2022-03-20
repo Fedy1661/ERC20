@@ -60,7 +60,7 @@ contract Token {
         return _allowances[_owner][_spender];
     }
 
-    function burn(address _account, uint256 _amount) public {
+    function burn(address _account, uint256 _amount) public returns (bool) {
         require(_amount > 0, 'Amount should be positive');
         require(msg.sender == _minter, 'You should be an owner');
         unchecked {
@@ -68,14 +68,16 @@ contract Token {
             totalSupply -= _amount;
         }
         emit Transfer(msg.sender, _account, _amount);
+        return true;
     }
 
-    function mint(address _account, uint256 _amount) public {
+    function mint(address _account, uint256 _amount) public returns (bool) {
         require(_amount > 0, 'Amount should be positive');
         require(msg.sender == _minter, 'You should be an owner');
         _balances[_account] += _amount;
         totalSupply += _amount;
         emit Transfer(msg.sender, _account, _amount);
+        return true;
     }
 
 }
