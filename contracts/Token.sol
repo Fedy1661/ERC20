@@ -38,6 +38,7 @@ contract Token {
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+        require(_value > 0, 'Value should be positive');
         uint256 fromValue = _balances[_from];
         require(fromValue >= _value, 'Owner has not enough tokens');
         uint256 availableValue = _allowances[_from][msg.sender];

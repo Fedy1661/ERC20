@@ -124,6 +124,10 @@ describe("Token", function() {
     });
   });
   describe("transferFrom", () => {
+    it("should be an error when value equals 0", async () => {
+      const tx = contract.transfer(addr1.address, 0);
+      await expect(tx).to.be.revertedWith("Value should be positive");
+    });
     it("should throw error if the owner balance doesn't have enough tokens",
       async () => {
         await contract.connect(addr1).approve(owner.address, 1000);
