@@ -154,7 +154,7 @@ describe("Token", function() {
         owner.address, addr1.address, 10
       )
       const call: BigNumber = await contract.balanceOf(owner.address)
-      expect(call.toNumber()).to.be.equal(previousBalance.toNumber() - 10)
+      expect(call).to.be.eq(previousBalance.sub(10))
     });
     it("should decrease allowance balance", async () => {
       await contract.connect(owner).approve(addr1.address, 10)
