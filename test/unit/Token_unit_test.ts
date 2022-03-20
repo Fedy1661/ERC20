@@ -108,10 +108,10 @@ describe("Token", function() {
       expect(call).to.be.equal(1);
     });
     it("should decrease balance", async () => {
-      const before = await contract.balanceOf(owner.address)
+      const startBalance = await contract.balanceOf(owner.address)
       await contract.connect(owner).transfer(addr1.address, 1);
-      const after = await contract.balanceOf(addr1.address);
-      expect(after).to.be.lt(before);
+      const endBalance = await contract.balanceOf(owner.address);
+      expect(startBalance).to.be.eq(endBalance.add(1));
     });
     it("should emit event", async () => {
       const tx = contract.connect(owner).transfer(addr1.address, 1);
