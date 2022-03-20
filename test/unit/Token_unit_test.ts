@@ -12,6 +12,8 @@ describe("Token", function() {
   let addr1: SignerWithAddress;
   let clean: string;
 
+  const initValue = 10;
+
   before(async () => {
     const Contract = await ethers.getContractFactory("Token");
     contract = await Contract.deploy();
@@ -95,30 +97,32 @@ describe("Token", function() {
       await expect(tx).to.be.revertedWith("Value should be positive");
     });
     it("should be an error when sending to yourself", async () => {
-      const tx = contract.connect(owner).transfer(owner.address, 1);
+      const tx = contract.connect(owner).transfer(owner.address, initValue);
       await expect(tx).to.be.revertedWith('You cannot transfer to yourself')
     });
     it("should be an error when not enough tokens", async () => {
-      const tx = contract.connect(addr1).transfer(owner.address, 1);
+      const tx = contract.connect(addr1).transfer(owner.address, initValue);
       await expect(tx).to.be.revertedWith('Not enough tokens');
     });
     it("should increase balance", async () => {
-      await contract.connect(owner).transfer(addr1.address, 1);
+      await contract.connect(owner).transfer(addr1.address, initValue);
       const call = await contract.balanceOf(addr1.address);
-      expect(call).to.be.equal(1);
+      expect(call).to.be.equal(initValue);
     });
     it("should decrease balance", async () => {
       const startBalance = await contract.balanceOf(owner.address)
-      await contract.connect(owner).transfer(addr1.address, 1);
+      await contract.connect(owner).transfer(addr1.address, initValue);
       const endBalance = await contract.balanceOf(owner.address);
-      expect(startBalance).to.be.eq(endBalance.add(1));
+      expect(startBalance).to.be.eq(endBalance.add(initValue));
     });
     it("should emit event", async () => {
-      const tx = contract.connect(owner).transfer(addr1.address, 1);
+      const tx = contract.connect(owner).transfer(addr1.address, initValue);
       await expect(tx).to.be.emit(contract, "Transfer");
     });
     it("should spend gas", async () => {
-      const tx = await contract.connect(owner).transfer(addr1.address, 1);
+      const tx = await contract.connect(owner).transfer(
+        addr1.address, initValue
+      );
       expect(tx).have.a.property('gasPrice')
         .be.gt(0)
     });
@@ -130,55 +134,57 @@ describe("Token", function() {
     });
     it("should throw error if the owner balance doesn't have enough tokens",
       async () => {
-        await contract.connect(addr1).approve(owner.address, 1000);
+        await contract.connect(addr1).approve(owner.address, initValue);
         const tx = contract.connect(owner).transferFrom(
-          addr1.address, owner.address, 100
+          addr1.address, owner.address, initValue
         )
-        await expect(tx).to.be.revertedWith('Not enough tokens')
+        const reason = 'Not enough tokens';
+        await expect(tx).to.be.revertedWith(reason)
       });
     it("should throw error if user exceeded the balance", async () => {
       const tx = contract.connect(addr1).transferFrom(
-        owner.address, addr1.address, 100
+        owner.address, addr1.address, initValue
       )
       const reason = 'You can\'t transfer so tokens from this user';
       await expect(tx).to.be.revertedWith(reason)
     });
     it("should increase balance", async () => {
-      await contract.connect(owner).approve(addr1.address, 10)
+      await contract.connect(owner).approve(addr1.address, initValue)
       await contract.connect(addr1).transferFrom(
-        owner.address, addr1.address, 10
+        owner.address, addr1.address, initValue
       )
       const call = await contract.balanceOf(addr1.address)
-      expect(call).to.be.equal(10)
+      expect(call).to.be.equal(initValue)
     });
     it("should decrease balance", async () => {
-      const previousBalance = await contract.balanceOf(owner.address)
-      await contract.connect(owner).approve(addr1.address, 10)
+      const startBalance = await contract.balanceOf(owner.address)
+      await contract.connect(owner).approve(addr1.address, initValue)
       await contract.connect(addr1).transferFrom(
-        owner.address, addr1.address, 10
+        owner.address, addr1.address, initValue
       )
-      const call: BigNumber = await contract.balanceOf(owner.address)
-      expect(call).to.be.eq(previousBalance.sub(10))
+      const endBalance = await contract.balanceOf(owner.address)
+      expect(startBalance).to.be.eq(endBalance.add(initValue))
     });
     it("should decrease allowance balance", async () => {
-      await contract.connect(owner).approve(addr1.address, 10)
+      const difference = initValue - 1
+      await contract.connect(owner).approve(addr1.address, initValue)
       await contract.connect(addr1).transferFrom(
-        owner.address, addr1.address, 9
+        owner.address, addr1.address, difference
       )
       const call = await contract.allowance(owner.address, addr1.address)
-      expect(call).to.be.equal(1)
+      expect(call).to.be.equal(initValue - difference)
     });
     it("should emit event", async () => {
-      await contract.connect(owner).approve(addr1.address, 10)
+      await contract.connect(owner).approve(addr1.address, initValue)
       const tx = contract.connect(addr1).transferFrom(
-        owner.address, addr1.address, 10
+        owner.address, addr1.address, initValue
       )
       await expect(tx).to.be.emit(contract, "Transfer");
     });
     it("should spend gas", async () => {
-      await contract.connect(owner).approve(addr1.address, 10)
+      await contract.connect(owner).approve(addr1.address, initValue)
       const tx = await contract.connect(addr1).transferFrom(
-        owner.address, addr1.address, 10
+        owner.address, addr1.address, initValue
       )
       expect(tx).have.a.property('gasPrice')
         .be.gt(0)
@@ -190,27 +196,26 @@ describe("Token", function() {
       await expect(tx).to.be.revertedWith('Value should be positive')
     });
     it("should increase allowance balance", async () => {
-      await contract.connect(owner).approve(addr1.address, 100)
+      await contract.connect(owner).approve(addr1.address, initValue)
       const call = await contract.allowance(owner.address, addr1.address);
-      expect(call).to.be.equal(100)
+      expect(call).to.be.equal(initValue)
     });
     it("should emit event", async () => {
-      const tx = contract.connect(owner).approve(addr1.address, 10)
+      const tx = contract.connect(owner).approve(addr1.address, initValue)
       await expect(tx).to.be.emit(contract, "Approval");
     });
     it("should spend gas", async () => {
-      const tx = await contract.connect(owner).approve(addr1.address, 10)
-      expect(tx).have.a.property('gasPrice')
-        .be.gt(0)
+      const tx = await contract.connect(owner).approve(addr1.address, initValue)
+      expect(tx).have.a.property('gasPrice').to.be.not.eq(0)
     });
   });
   describe("burn", () => {
     it("should call only the owner", async () => {
-      const tx = contract.burn(addr1.address, 100)
+      const tx = contract.burn(addr1.address, initValue)
       await expect(tx).to.not.be.revertedWith('You should be an owner')
     });
     it("should throw error if user is not an owner", async () => {
-      const tx = contract.connect(addr1).burn(addr1.address, 100)
+      const tx = contract.connect(addr1).burn(addr1.address, initValue)
       await expect(tx).to.be.revertedWith('You should be an owner')
     });
     it("should throw error if amount equals 0", async () => {
@@ -219,35 +224,34 @@ describe("Token", function() {
     });
     it("should decrease balance of the user", async () => {
       const before = await contract.balanceOf(owner.address)
-      await contract.burn(owner.address, 10)
+      await contract.burn(owner.address, initValue)
       const after = await contract.balanceOf(owner.address)
 
-      expect(before).to.be.equal(after.add(10))
+      expect(before).to.be.equal(after.add(initValue))
     });
     it("should decrease totalSupply", async () => {
       const before = await contract.totalSupply()
-      await contract.burn(owner.address, 100)
+      await contract.burn(owner.address, initValue)
       const after = await contract.totalSupply()
 
-      expect(before).to.be.equal(after.add(100))
+      expect(before).to.be.equal(after.add(initValue))
     });
     it("should emit event", async () => {
-      const tx = contract.connect(owner).burn(owner.address, 1);
+      const tx = contract.connect(owner).burn(owner.address, initValue);
       await expect(tx).to.be.emit(contract, "Transfer");
     });
     it("should spend gas", async () => {
-      const tx = await contract.burn(owner.address, 100)
-      expect(tx).have.a.property('gasPrice')
-        .be.gt(0)
+      const tx = await contract.burn(owner.address, initValue)
+      expect(tx).have.a.property('gasPrice').not.to.be.eq(0)
     });
   });
   describe("mint", () => {
     it("should call only the owner", async () => {
-      const tx = contract.mint(addr1.address, 100)
+      const tx = contract.mint(addr1.address, initValue)
       await expect(tx).to.not.be.revertedWith('You should be an owner')
     });
     it("should throw error if user is not an owner", async () => {
-      const tx = contract.connect(addr1).mint(addr1.address, 100)
+      const tx = contract.connect(addr1).mint(addr1.address, initValue)
       await expect(tx).to.be.revertedWith('You should be an owner')
     });
     it("should throw error if amount equals 0", async () => {
@@ -255,27 +259,26 @@ describe("Token", function() {
       await expect(tx).to.be.revertedWith('Amount should be positive')
     });
     it("should increase balance of the user", async () => {
-      const before = await contract.balanceOf(addr1.address)
-      await contract.mint(addr1.address, 10)
-      const after = await contract.balanceOf(addr1.address)
+      const startBalance = await contract.balanceOf(addr1.address)
+      await contract.mint(addr1.address, initValue)
+      const endBalance = await contract.balanceOf(addr1.address)
 
-      expect(before < after).to.be.true
+      expect(startBalance).to.be.eq(endBalance.sub(initValue))
     });
     it("should increase totalSupply", async () => {
-      const before = await contract.totalSupply()
-      await contract.mint(addr1.address, 100)
-      const after = await contract.totalSupply()
+      const startTotalSupply = await contract.totalSupply()
+      await contract.mint(addr1.address, initValue)
+      const endTotalSupply = await contract.totalSupply()
 
-      expect(before < after).to.be.true
+      expect(startTotalSupply).to.be.eq(endTotalSupply.sub(initValue))
     });
     it("should emit event", async () => {
-      const tx = contract.connect(owner).mint(addr1.address, 1);
+      const tx = contract.connect(owner).mint(addr1.address, initValue);
       await expect(tx).to.be.emit(contract, "Transfer");
     });
     it("should spend gas", async () => {
-      const tx = await contract.mint(owner.address, 100)
-      expect(tx).have.a.property('gasPrice')
-        .be.gt(0)
+      const tx = await contract.mint(owner.address, initValue)
+      expect(tx).have.a.property('gasPrice').not.to.be.eq(0)
     });
   });
 });
