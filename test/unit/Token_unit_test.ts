@@ -100,7 +100,7 @@ describe("Token", function() {
     });
     it("should be an error when not enough tokens", async () => {
       const tx = contract.connect(addr1).transfer(owner.address, 1);
-      await expect(tx).to.be.revertedWith("You do not have enough tokens");
+      await expect(tx).to.be.revertedWith('Not enough tokens');
     });
     it("should increase balance", async () => {
       await contract.connect(owner).transfer(addr1.address, 1);
@@ -134,7 +134,7 @@ describe("Token", function() {
         const tx = contract.connect(owner).transferFrom(
           addr1.address, owner.address, 100
         )
-        await expect(tx).to.be.revertedWith('Owner has not enough tokens')
+        await expect(tx).to.be.revertedWith('Not enough tokens')
       });
     it("should throw error if user exceeded the balance", async () => {
       const tx = contract.connect(addr1).transferFrom(

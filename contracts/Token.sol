@@ -24,31 +24,28 @@ contract Token {
         return _balances[_owner];
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool) {
+    function _transfer(address _from, address _to, uint256 _value) internal {
         require(_value > 0, 'Value should be positive');
-        require(msg.sender != _to, 'You cannot transfer to yourself');
-        uint256 balanceSender = _balances[msg.sender];
-        require(balanceSender >= _value, 'You do not have enough tokens');
+        require(_from != _to, 'You cannot transfer to yourself');
+        uint256 fromValue = _balances[_from];
+        require(fromValue >= _value, 'Not enough tokens');
 
         _balances[_to] += _value;
-        _balances[msg.sender] = balanceSender - _value;
-
+        _balances[_from] = fromValue - _value;
         emit Transfer(msg.sender, _to, _value);
+    }
+
+    function transfer(address _to, uint256 _value) public returns (bool) {
+        _transfer(msg.sender, _to, _value);
         return true;
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        require(_value > 0, 'Value should be positive');
-        uint256 fromValue = _balances[_from];
-        require(fromValue >= _value, 'Owner has not enough tokens');
         uint256 availableValue = _allowances[_from][msg.sender];
         require(availableValue >= _value, 'You can\'t transfer so tokens from this user');
 
-        _balances[_from] = fromValue - _value;
         _allowances[_from][msg.sender] = availableValue - _value;
-        _balances[_to] += _value;
-
-        emit Transfer(_from, _to, _value);
+        _transfer(_from, _to, _value);
         return true;
     }
 
