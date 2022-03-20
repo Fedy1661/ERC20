@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { Token } from "../typechain";
 
-interface balanceOf {
+interface BalanceOf {
   contract: string;
   owner: string;
 }
@@ -9,7 +9,7 @@ interface balanceOf {
 task("balanceOf", "Get user's balance")
   .addParam("contract", "Contract address")
   .addParam("owner", "Owner address")
-  .setAction(async (taskArgs: balanceOf, hre) => {
+  .setAction(async (taskArgs: BalanceOf, hre) => {
     const { contract, owner } = taskArgs;
     const Token = await hre.ethers.getContractFactory("Token");
     const token: Token = await Token.attach(contract);

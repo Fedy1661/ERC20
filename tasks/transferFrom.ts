@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { Token } from "../typechain";
 
-interface transferFrom {
+interface TransferFrom {
   contract: string;
   from: string;
   to: string;
@@ -13,7 +13,7 @@ task("transferFrom", "TransferFrom")
   .addParam("from", "From address")
   .addParam("to", "To address")
   .addParam("value", "Value")
-  .setAction(async (taskArgs: transferFrom, hre) => {
+  .setAction(async (taskArgs: TransferFrom, hre) => {
     const { contract, from, to, value } = taskArgs;
     const Token = await hre.ethers.getContractFactory("Token");
     const token: Token = await Token.attach(contract);
