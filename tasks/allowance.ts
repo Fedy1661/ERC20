@@ -1,11 +1,6 @@
 import { task } from "hardhat/config";
 import { Token } from "../typechain";
-
-interface Allowance {
-  contract: string,
-  owner: string,
-  spender: string
-}
+import { Allowance } from "./interfaces";
 
 task("allowance", "Get from allowances")
   .addParam("contract", "Contract address")

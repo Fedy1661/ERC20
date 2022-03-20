@@ -1,10 +1,6 @@
 import { task } from "hardhat/config";
 import { Token } from "../typechain";
-
-interface BalanceOf {
-  contract: string;
-  owner: string;
-}
+import { BalanceOf } from "./interfaces";
 
 task("balanceOf", "Get user's balance")
   .addParam("contract", "Contract address")

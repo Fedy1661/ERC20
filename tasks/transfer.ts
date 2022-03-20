@@ -1,11 +1,6 @@
 import { task } from "hardhat/config";
 import { Token } from "../typechain";
-
-interface Transfer {
-  contract: string;
-  to: string;
-  value: number;
-}
+import { Transfer } from "./interfaces";
 
 task("transfer", "Transfer tokens to the user")
   .addParam("contract", "Contract address")
